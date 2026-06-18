@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriLens AI - Vision Food Tracker & Muscle Builder</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-inner">
+            <a href="#" class="logo" id="header-logo">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.25z"/>
+                </svg>
+                NutriLens AI
+            </a>
+            <nav>
+                <ul id="nav-tabs">
+                    <li class="active" data-view="view-home"><button>Home</button></li>
+                    <li data-view="view-dashboard"><button>Dashboard</button></li>
+                    <li data-view="view-history"><button>History</button></li>
+                    <li data-view="view-trends"><button>Trends</button></li>
+                    <li data-view="view-settings"><button>Settings</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Application Scaffolding -->
+    <main class="app-container">
+
+        <!-- 1. HOME & UPLOAD VIEW -->
+        <section id="view-home" class="view-section active-view">
+            <div class="hero-section hero-split">
+                <div class="hero-text-content">
+                    <div class="hero-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        AI Vision Analysis
+                    </div>
+                    <h1>Upload your food photo.<br>Get instant AI nutrition insights.</h1>
+                    <p>Prioritizing clinical macro accuracy, food weights, and amino acid profiles to fuel your muscle gains and bulk progress.</p>
+                    <div class="cta-group">
+                        <button class="btn-primary" id="btn-trigger-upload">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Upload Food Photo
+                        </button>
+                        <button class="btn-secondary" id="btn-scroll-presets">Browse Sample Presets</button>
+                    </div>
+                </div>
+                <div class="hero-image-content">
+                    <div class="hero-scanner-box">
+                        <img src="assets/hero_food_bowl.png" alt="Fitness Bowl Prep Scanned">
+                        <div class="hero-scanner-laser"></div>
+                        <div class="hero-marker-overlay p1">Chicken Breast (160g)</div>
+                        <div class="hero-marker-overlay p2">Jasmine Rice (200g)</div>
+                        <div class="hero-marker-overlay p3">Broccoli (100g)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drag & Drop Upload Zone -->
+            <div class="upload-area-wrapper" id="drop-zone">
+                <div class="upload-icon-circle">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </div>
+                <h3>Drag your meal photo here</h3>
+                <p>Supports PNG, JPG, or JPEG. Live nutrition breakdown starts instantly.</p>
+                <span class="btn-secondary">Choose Local File</span>
+                <input type="file" id="file-selector" class="file-input" accept="image/*">
+            </div>
+
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 8v4l3 3"></path>
+                        </svg>
+                    </div>
+                    <h3>AI Food Recognition</h3>
+                    <p>Detects ingredients, estimates weights, sauces, and cooking methods from a single photo.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <h3>Full Macro Breakdown</h3>
+                    <p>Accurate counts of protein, carbs, healthy fats, fiber, sugar, and full micronutrient profiles.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <h3>Personalized Goals</h3>
+                    <p>Sets bodybuilding targets, calculates remaining macros, and acts as your AI Health Coach.</p>
+                </div>
+            </div>
+
+            <!-- Bodybuilding Presets Gallery -->
+            <div class="preset-selector-section" id="presets-section">
+                <h3 class="preset-title">Test Drive With Bodybuilder Presets</h3>
+                <div class="presets-gallery" id="presets-gallery-container">
+                    <!-- Dynamic Loading of Presets from JS -->
+                </div>
+            </div>
+
+            <!-- Showcase Sample Nutrition Result Card (For Instant Home Validation) -->
+            <div class="showcase-area">
+                <h2 class="showcase-title">How It Works</h2>
+                <div class="showcase-grid">
+                    <div class="showcase-image-wrap">
+                        <img src="assets/hero_food_bowl.png" alt="Fitness Bowl Prep">
+                        <div class="image-overlay-badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            AI Scanning: Complete
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                Showcase Result Card
+                            </div>
+                            <span class="food-item-tag">Sample Data</span>
+                        </div>
+                        <p style="color: var(--color-text-muted); margin-bottom: 20px; font-size: 0.95rem;">When you upload an image, NutriLens AI processes each ingredient and creates a comprehensive report like the one below:</p>
+                        
+                        <div class="food-items-list" style="margin-bottom: 20px;">
+                            <div class="food-item-row">
+                                <div class="food-item-details">
+                                    <span class="food-item-name">Grilled Chicken Breast</span>
+                                    <span class="food-item-meta">150g • Grilled, skinless</span>
+                                </div>
+                                <div class="food-item-macros">
+                                    <div class="food-item-macro-chip">
+                                        <div class="food-item-macro-val" style="color: var(--color-protein);">46g</div>
+                                        <div class="food-item-macro-label">Protein</div>
+                                    </div>
+                                    <div class="food-item-macro-chip">
+                                        <div class="food-item-macro-val">245</div>
+                                        <div class="food-item-macro-label">kcal</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="food-item-row">
+                                <div class="food-item-details">
+                                    <span class="food-item-name">Wild Rice (Cooked)</span>
+                                    <span class="food-item-meta">180g • Steamed, no salt</span>
+                                </div>
+                                <div class="food-item-macros">
+                                    <div class="food-item-macro-chip">
+                                        <div class="food-item-macro-val" style="color: var(--color-carbs);">40g</div>
+                                        <div class="food-item-macro-label">Carbs</div>
+                                    </div>
+                                    <div class="food-item-macro-chip">
+                                        <div class="food-item-macro-val">190</div>
+                                        <div class="food-item-macro-label">kcal</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="macros-progress-summary">
+                            <div class="macro-ring-widget" style="padding: 10px 4px;">
+                                <div class="macro-widget-title">CALORIES</div>
+                                <div style="color: var(--color-calories); font-weight: 700; font-size: 1.1rem;">560</div>
+                                <div class="macro-widget-confidence">96% conf</div>
+                            </div>
+                            <div class="macro-ring-widget" style="padding: 10px 4px;">
+                                <div class="macro-widget-title">PROTEIN</div>
+                                <div style="color: var(--color-protein); font-weight: 700; font-size: 1.1rem;">52g</div>
+                                <div class="macro-widget-confidence">94% conf</div>
+                            </div>
+                            <div class="macro-ring-widget" style="padding: 10px 4px;">
+                                <div class="macro-widget-title">CARBS</div>
+                                <div style="color: var(--color-carbs); font-weight: 700; font-size: 1.1rem;">48g</div>
+                                <div class="macro-widget-confidence">91% conf</div>
+                            </div>
+                            <div class="macro-ring-widget" style="padding: 10px 4px;">
+                                <div class="macro-widget-title">FATS</div>
+                                <div style="color: var(--color-fat); font-weight: 700; font-size: 1.1rem;">12g</div>
+                                <div class="macro-widget-confidence">89% conf</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. NUTRITION REPORT VIEW -->
+        <section id="view-report" class="view-section">
+            <div class="report-view-layout">
+                <!-- Left Column (Visuals & Detections) -->
+                <div class="report-left-panel">
+                    <!-- Image Card with Overlay Segment Pins -->
+                    <div class="report-image-preview-card" id="report-img-container">
+                        <!-- Loaded Image dynamically injected -->
+                        <!-- Overlay Pins dynamically injected -->
+                    </div>
+
+                    <!-- Detected Food Items Breakdown list -->
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                </svg>
+                                AI Ingredient Detection
+                            </div>
+                            <span class="btn-card-action" style="color: var(--color-calories); border-color: rgba(16, 185, 129, 0.3);">Vision Checked</span>
+                        </div>
+                        <div class="food-items-list" id="report-items-list-container">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Meal Quality Scorecard -->
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                                Meal Quality Scorecard
+                            </div>
+                        </div>
+                        
+                        <div class="scorecard-summary-flex">
+                            <div class="overall-score-gauge">
+                                <svg viewBox="0 0 36 36" style="width:100%; height:100%;">
+                                    <path class="macro-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-width="3"/>
+                                    <path class="macro-circle-fill" id="report-score-ring" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke="3" stroke-width="3" stroke-dasharray="85, 100"/>
+                                </svg>
+                                <div class="overall-score-text">
+                                    <div class="overall-score-num" id="report-score-number">85</div>
+                                    <div class="overall-score-label">Score</div>
+                                </div>
+                            </div>
+                            <div class="scorecard-grade-wrap">
+                                <h4 id="report-score-title">Excellent Muscle Food</h4>
+                                <p id="report-score-desc">High protein density, optimal amino acid distribution, and clean preparation. Highly recommended for bulk phase.</p>
+                            </div>
+                        </div>
+
+                        <div class="subscores-grid" id="report-subscores-container">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column (Macros, Micros, Glycemic metrics) -->
+                <div class="report-right-panel">
+                    <!-- Macro Card (Circular Indicators) -->
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                                </svg>
+                                Macronutrient Profile
+                            </div>
+                        </div>
+
+                        <div class="macros-progress-summary" id="report-macros-rings-container">
+                            <!-- Dynamic Rings Injected Here -->
+                        </div>
+                        <div class="macros-detailed-grid" id="report-macros-detailed-container" style="margin-top: 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; border-top: 1px solid var(--border-glass); padding-top: 20px;">
+                            <!-- Detailed macros (Total Fat, Saturated Fat, Fiber, Sugar) injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Micronutrient progress items -->
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                                Micronutrient Breakdown
+                            </div>
+                        </div>
+                        <div class="micronutrients-grid" id="report-micronutrients-container">
+                            <!-- Injected dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Additional Metrics: GI, Amino Acid Profile -->
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                </svg>
+                                Advanced Muscle Analytics
+                            </div>
+                        </div>
+
+                        <div class="metrics-pill-grid">
+                            <div class="metric-pill-card">
+                                <div class="metric-pill-label">Glycemic Index (GI)</div>
+                                <div class="metric-pill-value-flex">
+                                    <div class="metric-pill-val" id="report-gi-val">45</div>
+                                    <div class="metric-pill-subtext" id="report-gi-lbl">Low GI</div>
+                                </div>
+                            </div>
+                            <div class="metric-pill-card">
+                                <div class="metric-pill-label">Glycemic Load (GL)</div>
+                                <div class="metric-pill-value-flex">
+                                    <div class="metric-pill-val" id="report-gl-val">12</div>
+                                    <div class="metric-pill-subtext" id="report-gl-lbl">Medium GL</div>
+                                </div>
+                            </div>
+                            <div class="metric-pill-card">
+                                <div class="metric-pill-label">Cholesterol</div>
+                                <div class="metric-pill-value-flex">
+                                    <div class="metric-pill-val" id="report-cholesterol-val">85mg</div>
+                                    <div class="metric-pill-subtext">Optimal</div>
+                                </div>
+                            </div>
+                            <div class="metric-pill-card">
+                                <div class="metric-pill-label">Omega 3 / 6</div>
+                                <div class="metric-pill-value-flex">
+                                    <div class="metric-pill-val" id="report-omega-val">0.6g / 1.8g</div>
+                                    <div class="metric-pill-subtext">Ratio 1:3</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Essential Amino Acid Profile -->
+                        <div style="margin-top: 20px;">
+                            <h4 style="font-size: 0.95rem; margin-bottom: 8px;">Essential Amino Acid (EAA) Profile</h4>
+                            <div class="amino-list" id="report-amino-list-container">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Attribution and confidence source -->
+                        <div class="report-attribution">
+                            <span>Analysis Confidence Score: <strong id="report-conf-overall" style="color: var(--color-calories);">92%</strong></span>
+                            <span>Source: FDA FoodData Central & LLM Vision</span>
+                        </div>
+                    </div>
+
+                    <!-- Log Button Action -->
+                    <div style="display:flex; gap:16px;">
+                        <button class="btn-primary" style="flex:1;" id="btn-add-meal-to-log">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            Save & Log to Dashboard
+                        </button>
+                        <button class="btn-secondary" style="flex:0.6;" id="btn-cancel-report">Scan Another</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. DAILY DASHBOARD VIEW -->
+        <section id="view-dashboard" class="view-section">
+            <div class="dashboard-grid">
+                <!-- Left Panel: Consumed Progress and Logged Meal Categories -->
+                <div class="dashboard-left">
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="9" y1="3" x2="9" y2="21"></line>
+                                </svg>
+                                Today's Goals Progress
+                            </div>
+                            <span class="btn-card-action" id="dash-date-string">June 11, 2026</span>
+                        </div>
+
+                        <!-- Progress Bar Dashboard items -->
+                        <div class="dash-progress-grid" id="dash-progress-cards-container">
+                            <!-- Injected dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Today's Micronutrient Intake Tracker -->
+                    <div class="glass-card" style="margin-top: 24px;">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                                Today's Micronutrient Intake
+                            </div>
+                            <span class="btn-card-action" style="color: var(--color-calories); border-color: rgba(16, 185, 129, 0.3);">Daily Target 100%</span>
+                        </div>
+                        <div class="micronutrients-grid" id="dash-micronutrients-container">
+                            <!-- Today's accumulated micronutrients injected by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Meal Categories breakdown list (Breakfast, Lunch, Dinner, Snacks) -->
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                                Daily Meals Tracker
+                            </div>
+                            <button class="btn-card-action" id="btn-dashboard-manual-add">
+                                + Log Manually
+                            </button>
+                        </div>
+
+                        <!-- Breakfast, Lunch, Dinner, Snack Category Blocks -->
+                        <div id="dashboard-categories-container">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: AI Health Coach and Insights -->
+                <div class="dashboard-right">
+                    <!-- AI Health Coach Card -->
+                    <div class="glass-card coach-section">
+                        <div class="coach-header">
+                            <div class="coach-avatar">🤖</div>
+                            <div class="coach-title">
+                                <h3>AI Nutrition Coach</h3>
+                                <p>Muscle & Bulk Specialist</p>
+                            </div>
+                        </div>
+
+                        <div class="coach-bubble">
+                            <p id="coach-message">Analysing your today's meals... Add some protein to begin your coaching session.</p>
+                        </div>
+
+                        <div class="coach-suggestions">
+                            <h4>Suggested Muscle-Building Foods</h4>
+                            <div class="suggestions-chips" id="coach-suggestions-chips">
+                                <!-- Suggested items (Chicken, Whey, Paneer) as chips -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Insights List Card -->
+                    <div class="glass-card">
+                        <div class="card-header-flex">
+                            <div class="card-title-main">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                </svg>
+                                AI Nutrition Insights
+                            </div>
+                        </div>
+                        <div class="insights-list" id="dashboard-insights-container">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MEAL HISTORY LOG VIEW -->
+        <section id="view-history" class="view-section">
+            <div class="glass-card">
+                <div class="history-filters">
+                    <div class="card-title-main">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 8v4l3 3"></path>
+                            <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                        Meal History Log
+                    </div>
+                    <div class="search-input-wrap">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" class="search-input" id="history-search" placeholder="Search past foods...">
+                    </div>
+                </div>
+
+                <div class="history-items-container" id="history-items-list-container">
+                    <!-- Injected dynamically by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. WEEKLY & MONTHLY TREND CHARTS VIEW -->
+        <section id="view-trends" class="view-section">
+            <div class="trends-header-flex">
+                <div class="card-title-main">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Weekly & Monthly Analytics
+                </div>
+                <div class="timeframe-selector" id="trends-timeframe-toggles">
+                    <button class="timeframe-btn active" data-timeframe="week">7 Days</button>
+                    <button class="timeframe-btn" data-timeframe="month">30 Days</button>
+                </div>
+            </div>
+
+            <!-- Calorie Intake SVG Chart -->
+            <div class="glass-card" style="margin-bottom: 24px;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 8px;">Calorie Surplus & Target Trends</h3>
+                <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 20px;">Tracks daily caloric surplus or deficit relative to your bodybuilding goals.</p>
+                <div class="chart-wrapper" id="calories-chart-container">
+                    <!-- Dynamic SVG chart injected by charts.js -->
+                </div>
+            </div>
+
+            <!-- Protein Intake SVG Chart -->
+            <div class="glass-card" style="margin-bottom: 24px;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 8px;">Protein Distribution Tracker</h3>
+                <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 20px;">Ensuring consistent daily protein threshold (g) is hit to maximize hypertrophy.</p>
+                <div class="chart-wrapper" id="protein-chart-container">
+                    <!-- Dynamic SVG chart injected by charts.js -->
+                </div>
+            </div>
+
+            <!-- Carbohydrate Intake SVG Chart -->
+            <div class="glass-card" style="margin-bottom: 24px;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 8px;">Carbohydrate Energy Tracker</h3>
+                <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 20px;">Tracking glycogen replenishment carbs (g) to fuel intense workout sessions.</p>
+                <div class="chart-wrapper" id="carbs-chart-container">
+                    <!-- Dynamic SVG chart injected by charts.js -->
+                </div>
+            </div>
+
+            <!-- Fat Intake SVG Chart -->
+            <div class="glass-card">
+                <h3 style="font-size: 1.25rem; margin-bottom: 8px;">Dietary Fat Tracker</h3>
+                <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 20px;">Ensuring healthy fat intake (g) for optimal hormonal profiles and joint recovery.</p>
+                <div class="chart-wrapper" id="fat-chart-container">
+                    <!-- Dynamic SVG chart injected by charts.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. GOALS SETTINGS VIEW -->
+        <section id="view-settings" class="view-section">
+            <div class="glass-card" style="max-width: 650px; margin: 0 auto;">
+                <div class="card-header-flex">
+                    <div class="card-title-main">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        Personalized Target Goals
+                    </div>
+                </div>
+
+                <form class="settings-form" id="settings-form-element">
+                    <div class="form-group">
+                        <label for="input-gemini-key">Google Gemini API Key (Required for Live Vision Analysis)</label>
+                        <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                            <input type="password" id="input-gemini-key" placeholder="Enter your Gemini API key from Google AI Studio" style="width: 100%; padding-right: 64px;">
+                            <button type="button" id="btn-toggle-key-visibility" style="position: absolute; right: 12px; color: var(--color-text-muted); cursor: pointer; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Show</button>
+                        </div>
+                        <p style="color: var(--color-text-muted); font-size: 0.75rem; margin-top: 4px; line-height: 1.3;">API keys are stored securely in your browser's local storage and sent directly to Google's Gemini Vision API. Get a free API key at <a href="https://aistudio.google.com/" target="_blank" style="color: var(--color-primary); text-decoration: underline;">Google AI Studio</a>.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="input-target-kcal">Daily Calorie Target (kcal)</label>
+                        <input type="number" id="input-target-kcal" min="1000" max="8000" value="3000" required>
+                    </div>
+
+                    <div class="form-row-grid">
+                        <div class="form-group">
+                            <label for="input-target-protein">Daily Protein (g)</label>
+                            <input type="number" id="input-target-protein" min="50" max="400" value="180" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-target-carbs">Daily Carbs (g)</label>
+                            <input type="number" id="input-target-carbs" min="50" max="800" value="350" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row-grid">
+                        <div class="form-group">
+                            <label for="input-target-fat">Daily Fat (g)</label>
+                            <input type="number" id="input-target-fat" min="10" max="250" value="80" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-fitness-mode">Bodybuilding Mode</label>
+                            <select id="input-fitness-mode">
+                                <option value="lean-bulk" selected>Lean Bulk (Controlled Surplus)</option>
+                                <option value="dirty-bulk">Dirty Bulk (High Surplus)</option>
+                                <option value="maintenance">Maintenance / Hypertrophy</option>
+                                <option value="cut">Recomp / Cut</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="settings-btn-save">
+                        Save Goals & Recalculate
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Simulated AI Analysis Screen (Full-Page Overlay) -->
+    <div class="analysis-overlay" id="visual-analyzer-overlay">
+        <div class="analyzer-content">
+            <div class="scanner-box">
+                <img src="assets/hero_food_bowl.png" id="scanning-img-preview" alt="Food scanning">
+                <div class="scanner-laser"></div>
+            </div>
+            
+            <div class="analyzer-loader"></div>
+            <div class="analysis-status-text" id="analyzer-main-status">NutriLens Vision Booting...</div>
+            
+            <ul class="analysis-steps-list">
+                <li class="analysis-step" id="step-recognize">
+                    <span class="analysis-step-check"></span>
+                    Segmenting food boundaries...
+                </li>
+                <li class="analysis-step" id="step-volume">
+                    <span class="analysis-step-check"></span>
+                    Estimating volume & gram weight...
+                </li>
+                <li class="analysis-step" id="step-cooking">
+                    <span class="analysis-step-check"></span>
+                    Detecting cooking oils & hidden sauces...
+                </li>
+                <li class="analysis-step" id="step-nutrients">
+                    <span class="analysis-step-check"></span>
+                    Resolving micronutrients & EAA profiles...
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Toast Alert Box -->
+    <div class="toast-notification" id="toast-message-box">
+        <span id="toast-icon">✓</span>
+        <span id="toast-text">Meal saved successfully!</span>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
