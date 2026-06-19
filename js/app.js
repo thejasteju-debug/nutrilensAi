@@ -78,14 +78,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const prompt = `You are a clinical-grade nutritionist and hypertrophy specialist AI. 
 Analyze the uploaded food photo. Perform the following steps precisely:
-1. Identify the specific recipe and preparation method (e.g. Soya Chunk Curry, Spinach Omelette, Grilled Chicken Breast with gravy). Do not give generic answers; resolve exact recipes.
-2. Estimate the quantity of each ingredient, estimating its component-level weights in grams based on visual portion sizing relative to the plate.
-3. Calculate the complete macronutrient and micronutrient profiles.
-4. Calculate the Essential Amino Acid (EAA) profile in grams. Ensure that high-protein recipes (omelettes, soya bean recipes, chicken recipes) return highly realistic EAA profiles.
-5. Generate a Meal Quality Scorecard (0-100 overall) with subscores.
+1. Verify if the uploaded image represents a real food item, meal, or recipe. If the image is NOT of a food item (e.g., it is a person, a document, a pet, an object, an empty space, or random scene), return "isFood": false and explain why in the "error" field.
+2. If it is food, identify the specific recipe and preparation method (e.g. sprouted moong salad, Soya Chunk Curry, Spinach Omelette, Grilled Chicken Breast with gravy). Do not give generic answers; resolve exact recipes.
+3. Estimate the quantity of each ingredient, estimating its component-level weights in grams based on visual portion sizing relative to the plate.
+4. Calculate the complete macronutrient and micronutrient profiles. Be extremely precise:
+   - For green mung sprouts: sprouted moong has about 7g protein, 19g carbs, and 0.4g fat per 100g.
+   - For soya chunks: dry soya chunks have about 52g protein, 33g carbs, and 0.5g fat per 100g.
+   - For eggs: 1 large egg has about 6g protein, 0.6g carbs, 5g fat.
+   - Ensure the calorie math aligns with the macros: Total Calories = Protein * 4 + Carbs * 4 + Fat * 9.
+5. Calculate the Essential Amino Acid (EAA) profile in grams. Ensure that high-protein recipes (omelettes, soya bean recipes, chicken recipes) return highly realistic EAA profiles.
+6. Generate a Meal Quality Scorecard (0-100 overall) with subscores.
 
 Return a structured JSON report matching the following schema:
 {
+  "isFood": true,
+  "error": "",
   "name": "Specific Recipe Name (e.g. Masala Omelette with Whole Wheat Toast)",
   "category": "Breakfast, Lunch, Dinner, or Snacks",
   "calories": Total calories (integer),
@@ -173,6 +180,7 @@ Return a structured JSON report matching the following schema:
   ]
 }
 
+If "isFood" is false, you can leave macros, micros, scorecard, eaaProfile, items, and pins empty/default, but "isFood" and "error" fields MUST be filled.
 Ensure the response contains only raw, valid JSON matching the schema, with no markdown styling wrappers.`;
 
         const result = await model.generateContent([prompt, imagePart]);
@@ -188,6 +196,139 @@ Ensure the response contains only raw, valid JSON matching the schema, with no m
         
         return JSON.parse(cleanedJson);
     }
+
+    // Call Google Gemini API to analyze manually logged text recipe
+    async function analyzeTextWithGemini(mealName, ingredientsText) {
+        if (!geminiApiKey) {
+            throw new Error("No API key configured.");
+        }
+
+        const genAI = new GoogleGenerativeAI(geminiApiKey);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash",
+            generationConfig: { responseMimeType: "application/json" }
+        });
+
+        const prompt = `You are a clinical-grade nutritionist and hypertrophy specialist AI.
+Analyze the following manual food log entry. The user has described the meal name/title and listed its ingredients with optional quantities.
+
+Meal Name/Title: "${mealName}"
+Ingredients & Quantities:
+"${ingredientsText}"
+
+Perform the following steps precisely:
+1. Verify if the input represents a real food item, meal, or recipe. If the description is gibberish, not related to food (e.g., objects, activities, coding, random text), or completely blank, return "isFood": false and explain why in the "error" field.
+2. If it is food, break down the ingredients. For each ingredient, estimate or use the specified quantity and calculate its weight in grams.
+3. Calculate the complete macronutrient and micronutrient profiles. Be extremely precise:
+   - For green mung sprouts: sprouted moong has about 7g protein, 19g carbs, and 0.4g fat per 100g.
+   - For soya chunks: dry soya chunks have about 52g protein, 33g carbs, and 0.5g fat per 100g.
+   - For eggs: 1 large egg has about 6g protein, 0.6g carbs, 5g fat.
+   - Ensure the calorie math aligns with the macros: Total Calories = Protein * 4 + Carbs * 4 + Fat * 9.
+4. Calculate the Essential Amino Acid (EAA) profile in grams. For high-protein ingredients (soya chunks, egg, chicken, whey, fish, paneer), provide highly realistic EAA values based on standard database profiles.
+5. Generate a Meal Quality Scorecard (0-100 overall) with subscores.
+6. Verify your mathematical consistency: Total calories must equal the sum of ingredient calories, and should align closely with the formula (Protein * 4 + Carbs * 4 + Fat * 9).
+
+Return a structured JSON report matching the following schema:
+{
+  "isFood": true,
+  "error": "",
+  "name": "Specific Recipe Name (e.g. Soya Chunks Curry with White Rice)",
+  "category": "Breakfast, Lunch, Dinner, or Snacks",
+  "calories": Total calories (integer),
+  "macros": {
+    "protein": Total protein in grams (integer),
+    "carbs": Total carbs in grams (integer),
+    "fat": Total fats in grams (integer),
+    "saturatedFat": Saturated fat in grams (number),
+    "fiber": Fiber in grams (number),
+    "sugar": Sugar in grams (number)
+  },
+  "micros": {
+    "vitA": Vitamin A % DV (integer),
+    "vitC": Vitamin C % DV (integer),
+    "vitD": Vitamin D % DV (integer),
+    "vitE": Vitamin E % DV (integer),
+    "vitK": Vitamin K % DV (integer),
+    "vitB": Vitamin B Complex % DV (integer),
+    "iron": Iron % DV (integer),
+    "zinc": Zinc % DV (integer),
+    "magnesium": Magnesium % DV (integer),
+    "potassium": Potassium % DV (integer),
+    "calcium": Calcium % DV (integer),
+    "sodium": Sodium in mg (integer)
+  },
+  "metrics": {
+    "glycemicIndex": Estimated Glycemic Index 0-100 (integer),
+    "glycemicIndexLabel": "Low GI" or "Medium GI" or "High GI",
+    "glycemicLoad": Estimated Glycemic Load (integer),
+    "glycemicLoadLabel": "Low GL" or "Medium GL" or "High GL",
+    "cholesterol": Cholesterol in mg (integer),
+    "omega3": Omega-3 in grams (number),
+    "omega6": Omega-6 in grams (number),
+    "proteinQuality": Protein Quality Score 0-100 (integer),
+    "confidence": {
+      "overall": Overall confidence score 0-100 (integer),
+      "calories": Calories confidence score 0-100 (integer),
+      "protein": Protein confidence score 0-100 (integer),
+      "carbs": Carbs confidence score 0-100 (integer),
+      "fat": Fats confidence score 0-100 (integer)
+    }
+  },
+  "scorecard": {
+    "overall": Overall food quality score 0-100 (integer),
+    "proteinQuality": Subscore 0-100 (integer),
+    "microDensity": Subscore 0-100 (integer),
+    "satiety": Subscore 0-100 (integer),
+    "muscleBuilding": Subscore 0-100 (integer),
+    "weightLoss": Subscore 0-100 (integer),
+    "heartHealth": Subscore 0-100 (integer),
+    "gradeTitle": "Anabolic grade title (e.g. Superior Muscle Fuel)",
+    "gradeDesc": "2-sentence nutritional rationale explaining why this score was given."
+  },
+  "eaaProfile": {
+    "leucine": Leucine in grams (number),
+    "isoleucine": Isoleucine in grams (number),
+    "valine": Valine in grams (number),
+    "lysine": Lysine in grams (number),
+    "methionine": Methionine in grams (number),
+    "phenylalanine": Phenylalanine in grams (number),
+    "threonine": Threonine in grams (number),
+    "tryptophan": Tryptophan in grams (number),
+    "histidine": Histidine in grams (number)
+  },
+  "items": [
+    {
+      "name": "Ingredient Name (e.g. Soya Chunks)",
+      "description": "Quantity and state (e.g. 70g dry)",
+      "protein": Protein in grams (integer),
+      "carbs": Carbs in grams (integer),
+      "fat": Fats in grams (integer),
+      "saturatedFat": Saturated fat in grams (number),
+      "fiber": Fiber in grams (number),
+      "sugar": Sugar in grams (number),
+      "calories": Calories (integer),
+      "confidence": 100
+    }
+  ],
+  "pins": []
+}
+
+If "isFood" is false, you can leave macros, micros, scorecard, eaaProfile, items, and pins empty/default, but "isFood" and "error" fields MUST be filled.
+Ensure the response contains only raw, valid JSON matching the schema, with no markdown styling wrappers.`;
+
+        const result = await model.generateContent([prompt]);
+        const responseText = result.response.text();
+
+        let cleanedJson = responseText.trim();
+        if (cleanedJson.startsWith("```json")) {
+            cleanedJson = cleanedJson.substring(7, cleanedJson.length - 3).trim();
+        } else if (cleanedJson.startsWith("```")) {
+            cleanedJson = cleanedJson.substring(3, cleanedJson.length - 3).trim();
+        }
+
+        return JSON.parse(cleanedJson);
+    }
+
 
     // Helper to get Swedish style YYYY-MM-DD local date string
     function getLocalDateString(date = new Date()) {
@@ -353,6 +494,53 @@ Ensure the response contains only raw, valid JSON matching the schema, with no m
         }
     });
 
+    // ----------------------------------------------------
+    // MANUAL LOGGING & LOG SWITCHER HANDLERS
+    // ----------------------------------------------------
+    const tabScanPhoto = document.getElementById("tab-scan-photo");
+    const tabManualLog = document.getElementById("tab-manual-log");
+    const manualLogPanel = document.getElementById("manual-log-panel");
+    const btnAnalyzeManual = document.getElementById("btn-analyze-manual");
+    const inputManualMealName = document.getElementById("manual-meal-name");
+    const inputManualIngredients = document.getElementById("manual-ingredients");
+
+    if (tabScanPhoto && tabManualLog && dropZone && manualLogPanel) {
+        tabScanPhoto.addEventListener("click", () => {
+            tabScanPhoto.classList.add("active");
+            tabManualLog.classList.remove("active");
+            dropZone.style.display = "block";
+            manualLogPanel.style.display = "none";
+        });
+
+        tabManualLog.addEventListener("click", () => {
+            tabManualLog.classList.add("active");
+            tabScanPhoto.classList.remove("active");
+            dropZone.style.display = "none";
+            manualLogPanel.style.display = "block";
+        });
+    }
+
+    if (btnAnalyzeManual) {
+        btnAnalyzeManual.addEventListener("click", () => {
+            const mealName = inputManualMealName.value.trim();
+            const ingredientsText = inputManualIngredients.value.trim();
+
+            if (!mealName || !ingredientsText) {
+                showToast("Please enter a meal name and ingredients.", "error");
+                return;
+            }
+
+            if (!geminiApiKey) {
+                showToast("Please configure your Gemini API Key in Settings to use manual recipe logging.", "error");
+                switchView("view-settings");
+                return;
+            }
+
+            // Trigger manual logging text analysis
+            triggerManualTextAnalysis(mealName, ingredientsText);
+        });
+    }
+
     function handleFileSelect(file) {
         if (!file || !file.type.startsWith("image/")) {
             showToast("Invalid file format. Please select an image.", "error");
@@ -404,6 +592,12 @@ Ensure the response contains only raw, valid JSON matching the schema, with no m
             step1.innerHTML = `<span class="analysis-step-check"></span>Connecting to Google Gemini API...`;
             
             analyzeImageWithGemini(customImg).then(liveMealData => {
+                if (liveMealData.isFood === false) {
+                    analyzerOverlay.classList.remove("active");
+                    showToast(liveMealData.error || "Image not recognized as a food item or meal.", "error");
+                    return;
+                }
+
                 // Set steps completed rapidly to show success
                 document.getElementById("step-recognize").className = "analysis-step completed";
                 
@@ -496,6 +690,85 @@ Ensure the response contains only raw, valid JSON matching the schema, with no m
         }
     }
 
+    // Trigger text-based food analysis workflow
+    function triggerManualTextAnalysis(mealName, ingredientsText) {
+        // Reset steps status UI
+        const steps = [
+            { id: "step-recognize", text: "Verifying recipe and ingredients..." },
+            { id: "step-volume", text: "Parsing weights and ingredient proportions..." },
+            { id: "step-cooking", text: "Estimating cooking values..." },
+            { id: "step-nutrients", text: "Calculating micro & amino acid values..." }
+        ];
+
+        steps.forEach(step => {
+            const el = document.getElementById(step.id);
+            if (el) {
+                el.className = "analysis-step";
+                el.innerHTML = `<span class="analysis-step-check"></span>${step.text}`;
+            }
+        });
+
+        // Set scanning preview image to a manual log icon
+        scanningImgPreview.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%23ff6f43' stroke-width='1.5'><path d='M12 20h9'/><path d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z'/></svg>";
+
+        // Show Overlay
+        analyzerOverlay.classList.add("active");
+        analyzerStatus.innerText = "Analyzing ingredients with Google Gemini API...";
+
+        const step1 = document.getElementById("step-recognize");
+        if (step1) step1.className = "analysis-step active";
+
+        analyzeTextWithGemini(mealName, ingredientsText).then(liveMealData => {
+            if (liveMealData.isFood === false) {
+                analyzerOverlay.classList.remove("active");
+                showToast(liveMealData.error || "Input not recognized as a food item or recipe.", "error");
+                return;
+            }
+
+            // Mark step 1 completed
+            const s1 = document.getElementById("step-recognize");
+            if (s1) s1.className = "analysis-step completed";
+            
+            const step2 = document.getElementById("step-volume");
+            if (step2) {
+                step2.className = "analysis-step active";
+                setTimeout(() => {
+                    step2.className = "analysis-step completed";
+                    const step3 = document.getElementById("step-cooking");
+                    if (step3) {
+                        step3.className = "analysis-step active";
+                        setTimeout(() => {
+                            step3.className = "analysis-step completed";
+                            const step4 = document.getElementById("step-nutrients");
+                            if (step4) {
+                                step4.className = "analysis-step active";
+                                setTimeout(() => {
+                                    step4.className = "analysis-step completed";
+                                    setTimeout(() => {
+                                        analyzerOverlay.classList.remove("active");
+                                        currentAnalyzedMeal = liveMealData;
+                                        customImageBase64 = "manual"; // Set flag for history log image thumbnail
+                                        renderNutritionReport(liveMealData, "manual");
+                                        switchView("view-report");
+                                        showToast(`Resolved Recipe: ${liveMealData.name}!`, "success");
+                                        
+                                        // Clear form inputs
+                                        inputManualMealName.value = "";
+                                        inputManualIngredients.value = "";
+                                    }, 500);
+                                }, 800);
+                            }
+                        }, 800);
+                    }
+                }, 800);
+            }
+        }).catch(err => {
+            console.error("Gemini text analysis error: ", err);
+            analyzerOverlay.classList.remove("active");
+            showToast("Text analysis failed. Please verify ingredients format and try again.", "error");
+        });
+    }
+
     // ----------------------------------------------------
     // 5. NUTRITION REPORT CARD VIEW
     // ----------------------------------------------------
@@ -536,15 +809,28 @@ Ensure the response contains only raw, valid JSON matching the schema, with no m
         const imgContainer = document.getElementById("report-img-container");
         imgContainer.innerHTML = "";
         
-        const imgEl = document.createElement("img");
-        if (customImg) {
-            imgEl.src = customImg;
-        } else if (meal.image) {
-            imgEl.src = meal.image;
+        if (customImg === "manual") {
+            imgContainer.innerHTML = `
+                <div class="manual-log-placeholder" style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; width:100%; background: linear-gradient(135deg, rgba(255, 111, 67, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%); color: var(--color-primary); text-align: center; padding: 20px;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; filter: drop-shadow(0 4px 8px rgba(255, 111, 67, 0.2));">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    <div style="font-weight:700; font-size:1.2rem; color:var(--color-text-main);">Manual Recipe Entry</div>
+                    <div style="font-size:0.85rem; color:var(--color-text-muted); margin-top:6px;">Clinically calculated via ingredients list</div>
+                </div>
+            `;
         } else {
-            imgEl.src = "assets/hero_food_bowl.png";
+            const imgEl = document.createElement("img");
+            if (customImg) {
+                imgEl.src = customImg;
+            } else if (meal.image) {
+                imgEl.src = meal.image;
+            } else {
+                imgEl.src = "assets/hero_food_bowl.png";
+            }
+            imgContainer.appendChild(imgEl);
         }
-        imgContainer.appendChild(imgEl);
 
         // Inject vision segments (pins)
         if (meal.pins && meal.pins.length > 0) {
@@ -1145,9 +1431,10 @@ Ensure the response contains only raw, valid JSON matching the schema, with no m
             
             const dateStr = new Date(log.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
             
-            const imgHtml = log.image 
+            const isManual = log.image === "manual";
+            const imgHtml = (log.image && !isManual)
                 ? `<img src="${log.image}" class="history-img-thumb" alt="${log.name}">`
-                : `<div class="history-img-thumb" style="display:flex; align-items:center; justify-content:center; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass);"><span style="font-size:1.5rem;">🥗</span></div>`;
+                : `<div class="history-img-thumb" style="display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, rgba(255, 111, 67, 0.15), rgba(99, 102, 241, 0.15)); border: 1px solid var(--border-glass);"><span style="font-size:1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">📝</span></div>`;
 
             card.innerHTML = `
                 ${imgHtml}

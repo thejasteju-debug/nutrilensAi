@@ -271,6 +271,54 @@ nav ul li.active button {
     color: #fff;
 }
 
+/* Logging Method Tabs Switcher */
+.logging-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-glass);
+    padding: 6px;
+    border-radius: 18px;
+    backdrop-filter: blur(8px);
+}
+
+.logging-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border: none;
+    background: none;
+    color: var(--color-text-muted);
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.logging-tab:hover {
+    color: var(--color-text-main);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.logging-tab.active {
+    background: var(--color-primary) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 16px rgba(255, 111, 67, 0.25);
+}
+
+/* Manual Logging Panel focus styling */
+.manual-log-area input:focus,
+.manual-log-area textarea:focus {
+    border-color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 10px rgba(255, 111, 67, 0.15);
+}
+
 /* Feature grid */
 .features-grid {
     display: grid;
